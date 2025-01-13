@@ -11,10 +11,19 @@ import { mdTableCreator } from './mdTableCreator';
 import path from 'path';
 import { jError } from '../../common/console';
 import { createFile } from '../../common/createFile';
-import { validateDocumentConfig, JanghoodConfig, JanghoodDefineConfig } from '@janghood/config';
+import { JanghoodConfig, JanghoodDefineConfig, validateDocumentConfig } from '@janghood/config';
+import { MarkdownOption } from '@janghood/config/types/api-extractor/markdown';
 
-const replaceDictionary = (dict: string, output: string, replaceStr: string) => {
-  return `${output}${path.sep}${dict.replace(replaceStr, '')}`;
+const replaceDictionary = (dict: string, output: MarkdownOption['output'], replace: MarkdownOption['replace']) => {
+  let replaceStr = dict;
+  if (replace) {
+    if (typeof replace === 'string') {
+      replaceStr = dict.replace(replace, '');
+    } else {
+      replaceStr = replace(dict);
+    }
+  }
+  return `${output}${path.sep}${replaceStr}`;
 };
 
 export const markdownCreator = () => {
@@ -45,21 +54,21 @@ export const markdownCreator = () => {
       }
       const path = {
         file: api.path.file,
-        directory: replaceDictionary(api.path.directory, document.markdown.output, document.markdown.replace!)
+        directory: replaceDictionary(api.path.directory, document.markdown.output, document.markdown.replace!),
       };
 
       return {
         doc: api.doc,
         path,
         name: api.name,
-        tables: mdTableCreator(api)
+        tables: mdTableCreator(api),
       };
     });
   };
 
   return {
     init,
-    run
+    run,
   };
 };
 

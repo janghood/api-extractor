@@ -53,13 +53,11 @@ describe('mdTableCreator return right', () => {
     `);
   })
 
-})
-
-test('test return right markdown info', () => {
-  const markdownHandler = markdownCreator();
-  markdownHandler.init([testApiInfo[0]]);
-  const markdownInfo = markdownHandler.run(option);
-  expect(markdownInfo).toMatchInlineSnapshot(`
+  test('test return right markdown info', () => {
+    const markdownHandler = markdownCreator();
+    markdownHandler.init([testApiInfo[0]]);
+    const markdownInfo = markdownHandler.run(option);
+    expect(markdownInfo).toMatchInlineSnapshot(`
     [
       {
         "doc": {
@@ -93,4 +91,48 @@ test('test return right markdown info', () => {
       },
     ]
   `);
+  })
+
+  describe('replace',()=>{
+    test('replace with string', () => {
+      const markdownHandler = markdownCreator();
+      markdownHandler.init([testApiInfo[0]]);
+      const markdownInfo = markdownHandler.run({
+          apiExtractor: {
+            include: ['example/**/*.d.ts'],
+            document: {
+              markdown: {
+                output: 'doc',
+                replace: 'example/',
+                active: true
+              }
+            }
+          }
+        }
+      );
+      expect(markdownInfo[0]!.path.directory).toBe('doc/merge');
+    })
+
+    test('replace with function', () => {
+      const markdownHandler = markdownCreator();
+      markdownHandler.init([testApiInfo[0]]);
+      const markdownInfo = markdownHandler.run({
+          apiExtractor: {
+            include: ['example/**/*.d.ts'],
+            document: {
+              markdown: {
+                output: 'doc',
+                replace: (dir) => dir.replace('example/', ''),
+                active: true
+              }
+            }
+          }
+        }
+      );
+      expect(markdownInfo[0]!.path.directory).toBe('doc/merge');
+    })
+  })
+
+
 })
+

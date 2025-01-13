@@ -37,7 +37,7 @@ export const veturDataCreator = () => {
     return {
       [doc?.name ?? '']: {
         attributes,
-        description: `${doc?.docDescription}\n[docs](${doc?.docUrl})` ?? ''
+        description: `${doc?.docDescription}\n[docs](${doc?.docUrl})`
       }
     }
   }
